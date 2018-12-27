@@ -31,10 +31,10 @@ class PatientSummaryItemsTest {
     fun generateSummaryBloodPressureListItem(syncStatus: SyncStatus, updatedAt: Instant): SummaryBloodPressureListItem {
       return SummaryBloodPressureListItem(
           measurement = PatientMocker.bp(updatedAt = updatedAt, syncStatus = syncStatus),
-          timestamp = Today,
+          displayDaysTimestamp = Today,
           isEditable = false,
           showDivider = false,
-          displayTime = updatedAt.toString().toOptional()
+          displayTime = updatedAt.toString()
       )
     }
 

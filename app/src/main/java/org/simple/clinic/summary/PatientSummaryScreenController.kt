@@ -126,7 +126,7 @@ class PatientSummaryScreenController @Inject constructor(
           .refCount()
 
       val displayTime = { instant: Instant ->
-        instant.atZone(zoneId).format(timeFormatterForBp).toString().toOptional()
+        instant.atZone(zoneId).format(timeFormatterForBp).toString()
       }
 
 
@@ -141,10 +141,10 @@ class PatientSummaryScreenController @Inject constructor(
                 val timestamp = timestampGenerator.generate(measurement.createdAt)
                 SummaryBloodPressureListItem(
                     measurement = measurement,
-                    timestamp = timestamp,
+                    displayDaysTimestamp = timestamp,
                     isEditable = isBpEditable(measurement, bpEditableFor),
                     showDivider = measurement.uuid == lastElement.uuid,
-                    displayTime = displayTime(measurement.createdAt)
+                    displayTime = if (measurementList.size > 1) displayTime(measurement.createdAt) else null
                 )
               }
             }
