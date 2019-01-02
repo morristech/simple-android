@@ -11,10 +11,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/spacing_16"
     android:paddingEnd="@dimen/spacing_24"
-    android:paddingStart="@dimen/spacing_24"
-    android:paddingTop="@dimen/spacing_16">
+    android:paddingStart="@dimen/spacing_24">
 
     <ImageView
       android:id="@+id/patientsummary_bp_reading_heart"

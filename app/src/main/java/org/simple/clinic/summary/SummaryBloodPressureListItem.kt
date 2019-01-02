@@ -6,7 +6,6 @@ import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -21,6 +20,8 @@ import org.simple.clinic.util.None
 import org.simple.clinic.util.Truss
 import org.simple.clinic.util.Unicode
 import org.simple.clinic.widgets.UiEvent
+import org.simple.clinic.widgets.setPaddingBottom
+import org.simple.clinic.widgets.setPaddingTop
 import org.simple.clinic.widgets.setTextAppearanceCompat
 
 data class SummaryBloodPressureListItem(
@@ -28,7 +29,8 @@ data class SummaryBloodPressureListItem(
     private val displayDaysTimestamp: RelativeTimestamp,
     val isEditable: Boolean = false,
     val showDivider: Boolean,
-    val displayTime: String?
+    val displayTime: String?,
+    val firstInGroup: Boolean
 ) : GroupieItemWithUiEvents<SummaryBloodPressureListItem.BpViewHolder>(measurement.uuid.hashCode().toLong()) {
 
   override lateinit var uiEvents: Subject<UiEvent>
@@ -88,8 +90,18 @@ data class SummaryBloodPressureListItem(
     if (displayTime != null) {
       holder.timeTextView.visibility = VISIBLE
       holder.timeTextView.text = displayTime
-    } else{
+    } else {
       holder.timeTextView.visibility = GONE
+    }
+
+    val multipleItemsInThisGroup = displayTime != null
+
+    if (multipleItemsInThisGroup) {
+      if (firstInGroup) holder.itemLayout.setPaddingTop(R.dimen.patientsummary_bp_list_item_first_in_group_top_padding) else holder.itemLayout.setPaddingTop(R.dimen.patientsummary_bp_list_item_multiple_in_group_bp_top_padding)
+      if (showDivider) holder.itemLayout.setPaddingBottom(R.dimen.patientsummary_bp_list_item_last_in_group_bottom_padding) else holder.itemLayout.setPaddingBottom(R.dimen.patientsummary_bp_list_item_multiple_in_group_bp_bottom_padding)
+    } else {
+      holder.itemLayout.setPaddingBottom(R.dimen.patientsummary_bp_list_item_single_padding)
+      holder.itemLayout.setPaddingTop(R.dimen.patientsummary_bp_list_item_single_padding)
     }
 
   }
@@ -105,5 +117,6 @@ data class SummaryBloodPressureListItem(
     val daysAgoTextView by bindView<TextView>(R.id.patientsummary_item_bp_date)
     val divider by bindView<View>(R.id.patientsummary_item_bp_divider)
     val timeTextView by bindView<TextView>(R.id.patientsummary_item_bp_time)
+    val itemLayout by bindView<LinearLayout>(R.id.patientsummary_item_layout)
   }
 }

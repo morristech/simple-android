@@ -9,7 +9,6 @@ import org.simple.clinic.patient.PatientMocker
 import org.simple.clinic.patient.SyncStatus
 import org.simple.clinic.patient.SyncStatus.DONE
 import org.simple.clinic.patient.SyncStatus.PENDING
-import org.simple.clinic.util.toOptional
 import org.threeten.bp.Duration
 import org.threeten.bp.Instant
 
@@ -34,7 +33,8 @@ class PatientSummaryItemsTest {
           displayDaysTimestamp = Today,
           isEditable = false,
           showDivider = false,
-          displayTime = updatedAt.toString()
+          displayTime = updatedAt.toString(),
+          firstInGroup = true
       )
     }
 

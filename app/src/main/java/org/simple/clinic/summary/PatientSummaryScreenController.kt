@@ -31,7 +31,6 @@ import org.simple.clinic.summary.PatientSummaryCaller.NEW_PATIENT
 import org.simple.clinic.summary.PatientSummaryCaller.SEARCH
 import org.simple.clinic.util.Just
 import org.simple.clinic.util.exhaustive
-import org.simple.clinic.util.toOptional
 import org.simple.clinic.widgets.UiEvent
 import org.threeten.bp.Clock
 import org.threeten.bp.Duration
@@ -144,7 +143,8 @@ class PatientSummaryScreenController @Inject constructor(
                     displayDaysTimestamp = timestamp,
                     isEditable = isBpEditable(measurement, bpEditableFor),
                     showDivider = measurement.uuid == lastElement.uuid,
-                    displayTime = if (measurementList.size > 1) displayTime(measurement.createdAt) else null
+                    displayTime = if (measurementList.size > 1) displayTime(measurement.createdAt) else null,
+                    firstInGroup = measurement.uuid == measurementList.first().uuid
                 )
               }
             }
