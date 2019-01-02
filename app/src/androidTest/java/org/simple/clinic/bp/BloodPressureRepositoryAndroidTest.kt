@@ -151,12 +151,9 @@ class BloodPressureRepositoryAndroidTest {
 
     val fifteenSeconds = Duration.ofSeconds(15L)
     val tenHours = Duration.ofHours(10L)
-    val twentyDays = Duration.ofDays(20L)
 
-    listOf(fifteenSeconds, tenHours, twentyDays)
-        .map { now.plus(it) }
-        .map { bloodPressure.copy(deletedAt = it, updatedAt = it) }
-        .forEach { appDatabase.bloodPressureDao().save(listOf(it)) }
+    appDatabase.bloodPressureDao().save(listOf(bloodPressure.copy(updatedAt = now.plus(fifteenSeconds))))
+    appDatabase.bloodPressureDao().save(listOf(bloodPressure.copy(deletedAt = now.plus(tenHours), updatedAt = now.plus(tenHours))))
 
     // We cannot verify we received the values exactly because Room does not always emit all the
     // intermediate changes. So we'll either have to add a delay between each update to guarantee
@@ -167,7 +164,7 @@ class BloodPressureRepositoryAndroidTest {
 
     assertThat(receivedValues.size).isAtLeast(1)
     assertThat(receivedValues.last())
-        .isEqualTo(bloodPressure.copy(deletedAt = now.plus(twentyDays), updatedAt = now.plus(twentyDays)))
+        .isEqualTo(bloodPressure.copy(deletedAt = now.plus(tenHours), updatedAt = now.plus(tenHours)))
 
     deletedMeasurementObserver.dispose()
   }
