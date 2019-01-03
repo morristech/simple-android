@@ -451,24 +451,20 @@ class PatientRepositoryAndroidTest {
 
     facilityRepository.setCurrentFacility(user, currentFacility).blockingAwait()
 
-    val runAssertions = { searchResults: List<PatientSearchResult> ->
-      assertThat(searchResults).hasSize(5)
+    val searchResults = patientRepository.search("ash").blockingFirst()
+    assertThat(searchResults).hasSize(5)
 
-      val patientsInCurrentFacility = setOf("Ashok Kumari", "Kumar Ashok", "Ashoka Kumar")
-      val patientsInOtherFacility = setOf("Ashoka", "Ash Kumari")
+    val patientsInCurrentFacility = setOf("Ashok Kumari", "Kumar Ashok", "Ashoka Kumar")
+    val patientsInOtherFacility = setOf("Ashoka", "Ash Kumari")
 
-      val findIndexOfPatientInSearchResults: (String) -> Int = { patientName ->
-        searchResults.indexOfFirst { it.fullName == patientName }
-      }
-      val indicesOfCurrentFacilityPatientsInSearchResults = patientsInCurrentFacility.map(findIndexOfPatientInSearchResults).toSet()
-      val indicesOfOtherFacilityPatientsInSearchResults = patientsInOtherFacility.map(findIndexOfPatientInSearchResults).toSet()
-
-      assertThat(indicesOfCurrentFacilityPatientsInSearchResults).isEqualTo(setOf(0, 1, 2))
-      assertThat(indicesOfOtherFacilityPatientsInSearchResults).isEqualTo(setOf(3, 4))
+    val findIndexOfPatientInSearchResults: (String) -> Int = { patientName ->
+      searchResults.indexOfFirst { it.fullName == patientName }
     }
+    val indicesOfCurrentFacilityPatientsInSearchResults = patientsInCurrentFacility.map(findIndexOfPatientInSearchResults).toSet()
+    val indicesOfOtherFacilityPatientsInSearchResults = patientsInOtherFacility.map(findIndexOfPatientInSearchResults).toSet()
 
-    val resultsWithAgeFilter = patientRepository.search("ash").blockingFirst()
-    runAssertions(resultsWithAgeFilter)
+    assertThat(indicesOfCurrentFacilityPatientsInSearchResults).isEqualTo(setOf(0, 1, 2))
+    assertThat(indicesOfOtherFacilityPatientsInSearchResults).isEqualTo(setOf(3, 4))
   }
 
   @Test
