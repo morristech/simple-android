@@ -417,17 +417,17 @@ class PatientRepositoryAndroidTest {
     data class FacilityAndBloodPressureDeleted(val facility: Facility, val isBloodPressureDeleted: Boolean)
 
     val data = listOf(
-        "Ashoka" to listOf(
+        "Ash 1" to listOf(
             FacilityAndBloodPressureDeleted(otherFacility, false)),
-        "Ashok Kumari" to listOf(
+        "Ash 2" to listOf(
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Kumar Ashok" to listOf(
+        "Ash 3" to listOf(
             FacilityAndBloodPressureDeleted(currentFacility, false),
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Ashoka Kumar" to listOf(
+        "Ash 4" to listOf(
             FacilityAndBloodPressureDeleted(otherFacility, false),
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Ash Kumari" to listOf())
+        "Ash 5" to listOf())
 
     Observable.fromIterable(data)
         .flatMapCompletable { (patientName, visitedFacilities) ->
@@ -454,8 +454,8 @@ class PatientRepositoryAndroidTest {
     val searchResults = patientRepository.search("ash").blockingFirst()
     assertThat(searchResults).hasSize(5)
 
-    val patientsInCurrentFacility = setOf("Ashok Kumari", "Kumar Ashok", "Ashoka Kumar")
-    val patientsInOtherFacility = setOf("Ashoka", "Ash Kumari")
+    val patientsInCurrentFacility = setOf("Ash 2", "Ash 3", "Ash 4")
+    val patientsInOtherFacility = setOf("Ash 1", "Ash 5")
 
     val findIndexOfPatientInSearchResults: (String) -> Int = { patientName ->
       searchResults.indexOfFirst { it.fullName == patientName }
