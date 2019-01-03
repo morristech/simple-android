@@ -416,17 +416,17 @@ class PatientRepositoryAndroidTest {
     data class FacilityAndBloodPressureDeleted(val facility: Facility, val isBloodPressureDeleted: Boolean)
 
     val data = listOf(
-        "Ash 1" to listOf(
+        "Patient with one BP in other facility" to listOf(
             FacilityAndBloodPressureDeleted(otherFacility, false)),
-        "Ash 2" to listOf(
+        "Patient with one BP in current facility" to listOf(
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Ash 3" to listOf(
+        "Patient with two BPs in current facility" to listOf(
             FacilityAndBloodPressureDeleted(currentFacility, false),
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Ash 4" to listOf(
+        "Patient with two BPs, latest in current facility" to listOf(
             FacilityAndBloodPressureDeleted(otherFacility, false),
             FacilityAndBloodPressureDeleted(currentFacility, false)),
-        "Ash 5" to listOf())
+        "Patient with no BPs" to listOf())
 
     data.forEach { (patientName, visitedFacilities) ->
       val patientProfile = testData.patientProfile()
@@ -449,11 +449,16 @@ class PatientRepositoryAndroidTest {
 
     facilityRepository.setCurrentFacility(user, currentFacility).blockingAwait()
 
-    val searchResults = patientRepository.search("ash").blockingFirst()
+    val searchResults = patientRepository.search("patient").blockingFirst()
     assertThat(searchResults).hasSize(5)
 
-    val patientsInCurrentFacility = setOf("Ash 2", "Ash 3", "Ash 4")
-    val patientsInOtherFacility = setOf("Ash 1", "Ash 5")
+    val patientsInCurrentFacility = setOf(
+        "Patient with one BP in current facility",
+        "Patient with two BPs in current facility",
+        "Patient with two BPs, latest in current facility")
+    val patientsInOtherFacility = setOf(
+        "Patient with one BP in other facility",
+        "Patient with no BPs")
 
     val findIndexOfPatientInSearchResults: (String) -> Int = { patientName ->
       searchResults.indexOfFirst { it.fullName == patientName }
