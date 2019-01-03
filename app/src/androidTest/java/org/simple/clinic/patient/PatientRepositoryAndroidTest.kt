@@ -3,7 +3,6 @@ package org.simple.clinic.patient
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import com.google.common.truth.Truth.assertThat
 import io.reactivex.Completable
-import io.reactivex.Observable
 import io.reactivex.Single
 import org.junit.After
 import org.junit.Before
@@ -429,25 +428,24 @@ class PatientRepositoryAndroidTest {
             FacilityAndBloodPressureDeleted(currentFacility, false)),
         "Ash 5" to listOf())
 
-    Observable.fromIterable(data)
-        .flatMapCompletable { (patientName, visitedFacilities) ->
-          patientRepository
-              .saveOngoingEntry(testData.ongoingPatientEntry(fullName = patientName))
-              .andThen(patientRepository.saveOngoingEntryAsPatient())
-              .flatMapCompletable { savedPatient ->
-                // Record BPs in different facilities.
-                Observable.fromIterable(visitedFacilities)
-                    .flatMapCompletable { (facility, isBpDeleted) ->
-                      val bloodPressureMeasurement = testData.bloodPressureMeasurement(
-                          patientUuid = savedPatient.uuid,
-                          facilityUuid = facility.uuid,
-                          deletedAt = if (isBpDeleted) Instant.now() else null)
+    data.forEach { (patientName, visitedFacilities) ->
+      val patientProfile = testData.patientProfile()
+          .let { profile ->
+            profile.copy(patient = profile.patient.copy(fullName = patientName, status = PatientStatus.ACTIVE))
+          }
 
-                      bloodPressureRepository.save(listOf(bloodPressureMeasurement))
-                    }
-              }
-        }
-        .blockingAwait()
+      patientRepository.save(listOf(patientProfile)).blockingAwait()
+
+      // Record BPs in different facilities.
+      visitedFacilities.forEach { (facility, isBloodPressureDeleted) ->
+        val bloodPressureMeasurement = testData.bloodPressureMeasurement(
+            patientUuid = patientProfile.patient.uuid,
+            facilityUuid = facility.uuid,
+            deletedAt = if (isBloodPressureDeleted) Instant.now() else null)
+
+        bloodPressureRepository.save(listOf(bloodPressureMeasurement)).blockingAwait()
+      }
+    }
 
     facilityRepository.setCurrentFacility(user, currentFacility).blockingAwait()
 
