@@ -454,22 +454,17 @@ class PatientRepositoryAndroidTest {
     val runAssertions = { searchResults: List<PatientSearchResult> ->
       assertThat(searchResults).hasSize(5)
 
-      val (inCurrentFacility, inOtherFacility) = searchResults.partition { currentFacility.uuid == it.lastBp?.takenAtFacilityUuid }
+      val patientsInCurrentFacility = setOf("Ashok Kumari", "Kumar Ashok", "Ashoka Kumar")
+      val patientsInOtherFacility = setOf("Ashoka", "Ash Kumari")
 
-      val expectedResultIndicesInCurrentFacility = setOf(0, 1, 2)
-      val expectedResultIndicesInOtherFacility = setOf(3, 4)
-
-      val actualPatientsInCurrentFacility = inCurrentFacility.map { it.fullName }.toSet()
-      val actualPatientsInOtherFacility = inOtherFacility.map { it.fullName }.toSet()
-      val actualResultIndicesInCurrentFacility = actualPatientsInCurrentFacility.map { patientName ->
+      val findIndexOfPatientInSearchResults: (String) -> Int = { patientName ->
         searchResults.indexOfFirst { it.fullName == patientName }
-      }.toSet()
-      val actualResultIndicesOfOtherFacility = actualPatientsInOtherFacility.map { patientName ->
-        searchResults.indexOfFirst { it.fullName == patientName }
-      }.toSet()
+      }
+      val indicesOfCurrentFacilityPatientsInSearchResults = patientsInCurrentFacility.map(findIndexOfPatientInSearchResults).toSet()
+      val indicesOfOtherFacilityPatientsInSearchResults = patientsInOtherFacility.map(findIndexOfPatientInSearchResults).toSet()
 
-      assertThat(actualResultIndicesInCurrentFacility).isEqualTo(expectedResultIndicesInCurrentFacility)
-      assertThat(actualResultIndicesOfOtherFacility).isEqualTo(expectedResultIndicesInOtherFacility)
+      assertThat(indicesOfCurrentFacilityPatientsInSearchResults).isEqualTo(setOf(0, 1, 2))
+      assertThat(indicesOfOtherFacilityPatientsInSearchResults).isEqualTo(setOf(3, 4))
     }
 
     val resultsWithAgeFilter = patientRepository.search("ash").blockingFirst()
