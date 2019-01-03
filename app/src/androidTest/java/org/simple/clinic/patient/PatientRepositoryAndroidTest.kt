@@ -14,7 +14,6 @@ import org.simple.clinic.AppDatabase
 import org.simple.clinic.AuthenticationRule
 import org.simple.clinic.TestClinicApp
 import org.simple.clinic.TestData
-import org.simple.clinic.bp.BloodPressureMeasurement
 import org.simple.clinic.bp.BloodPressureRepository
 import org.simple.clinic.drugs.PrescriptionRepository
 import org.simple.clinic.facility.Facility
@@ -341,69 +340,69 @@ class PatientRepositoryAndroidTest {
     assertThat(database.userFacilityMappingDao().mappingsForUser(user.uuid).blockingFirst()).isNotEmpty()
   }
 
-//  @Test
-//  fun patients_whose_last_visited_facility_matches_with_the_current_facility_should_be_present_at_the_top_when_searching() {
-//    val user = userSession.requireLoggedInUser().blockingFirst()
-//
-//    val facilities = facilityRepository.facilities().blockingFirst()
-//    val currentFacility = facilityRepository.currentFacility(user).blockingFirst()
-//    val otherFacility = facilities.first { it != currentFacility }
-//
-//    facilityRepository.associateUserWithFacilities(user, facilities.map { it.uuid }).blockingAwait()
-//
-//    val data = listOf(
-//        "Ashoka" to listOf(otherFacility),
-//        "Ashok Kumari" to listOf(currentFacility),
-//        "Kumar Ashok" to listOf(currentFacility, currentFacility),
-//        "Ashoka Kumar" to listOf(otherFacility, currentFacility),
-//        "Ash Kumari" to listOf())
-//
-//    Observable.fromIterable(data)
-//        .flatMapCompletable { (patientName, visitedFacilities) ->
-//          patientRepository
-//              .saveOngoingEntry(testData.ongoingPatientEntry(fullName = patientName, age = "20"))
-//              .andThen(patientRepository.saveOngoingEntryAsPatient())
-//              .flatMapCompletable { savedPatient ->
-//                // Record BPs in different facilities.
-//                Observable.fromIterable(visitedFacilities)
-//                    .flatMapSingle { facility ->
-//                      facilityRepository
-//                          .setCurrentFacility(user, facility)
-//                          .andThen(bpRepository
-//                              .saveMeasurement(savedPatient.uuid, systolic = 120, diastolic = 121)
-//                          )
-//                    }
-//                    .ignoreElements()
-//              }
-//        }
-//        .blockingAwait()
-//
-//    facilityRepository.setCurrentFacility(user, currentFacility).blockingAwait()
-//
-//    val runAssertions = { searchResults: List<PatientSearchResult> ->
-//      assertThat(searchResults).hasSize(5)
-//
-//      val (inCurrentFacility, inOtherFacility) = searchResults.partition { currentFacility.uuid == it.lastBp?.takenAtFacilityUuid }
-//
-//      val expectedResultIndicesInCurrentFacility = setOf(0, 1, 2)
-//      val expectedResultIndicesInOtherFacility = setOf(3, 4)
-//
-//      val actualPatientsInCurrentFacility = inCurrentFacility.map { it.fullName }.toSet()
-//      val actualPatientsInOtherFacility = inOtherFacility.map { it.fullName }.toSet()
-//      val actualResultIndicesInCurrentFacility = actualPatientsInCurrentFacility.map { patientName ->
-//        searchResults.indexOfFirst { it.fullName == patientName }
-//      }.toSet()
-//      val actualResultIndicesOfOtherFacility = actualPatientsInOtherFacility.map { patientName ->
-//        searchResults.indexOfFirst { it.fullName == patientName }
-//      }.toSet()
-//
-//      assertThat(actualResultIndicesInCurrentFacility).isEqualTo(expectedResultIndicesInCurrentFacility)
-//      assertThat(actualResultIndicesOfOtherFacility).isEqualTo(expectedResultIndicesInOtherFacility)
-//    }
-//
-//    val resultsWithAgeFilter = patientRepository.search("ash").blockingFirst()
-//    runAssertions(resultsWithAgeFilter)
-//  }
+  //  @Test
+  //  fun patients_whose_last_visited_facility_matches_with_the_current_facility_should_be_present_at_the_top_when_searching() {
+  //    val user = userSession.requireLoggedInUser().blockingFirst()
+  //
+  //    val facilities = facilityRepository.facilities().blockingFirst()
+  //    val currentFacility = facilityRepository.currentFacility(user).blockingFirst()
+  //    val otherFacility = facilities.first { it != currentFacility }
+  //
+  //    facilityRepository.associateUserWithFacilities(user, facilities.map { it.uuid }).blockingAwait()
+  //
+  //    val data = listOf(
+  //        "Ashoka" to listOf(otherFacility),
+  //        "Ashok Kumari" to listOf(currentFacility),
+  //        "Kumar Ashok" to listOf(currentFacility, currentFacility),
+  //        "Ashoka Kumar" to listOf(otherFacility, currentFacility),
+  //        "Ash Kumari" to listOf())
+  //
+  //    Observable.fromIterable(data)
+  //        .flatMapCompletable { (patientName, visitedFacilities) ->
+  //          patientRepository
+  //              .saveOngoingEntry(testData.ongoingPatientEntry(fullName = patientName, age = "20"))
+  //              .andThen(patientRepository.saveOngoingEntryAsPatient())
+  //              .flatMapCompletable { savedPatient ->
+  //                // Record BPs in different facilities.
+  //                Observable.fromIterable(visitedFacilities)
+  //                    .flatMapSingle { facility ->
+  //                      facilityRepository
+  //                          .setCurrentFacility(user, facility)
+  //                          .andThen(bpRepository
+  //                              .saveMeasurement(savedPatient.uuid, systolic = 120, diastolic = 121)
+  //                          )
+  //                    }
+  //                    .ignoreElements()
+  //              }
+  //        }
+  //        .blockingAwait()
+  //
+  //    facilityRepository.setCurrentFacility(user, currentFacility).blockingAwait()
+  //
+  //    val runAssertions = { searchResults: List<PatientSearchResult> ->
+  //      assertThat(searchResults).hasSize(5)
+  //
+  //      val (inCurrentFacility, inOtherFacility) = searchResults.partition { currentFacility.uuid == it.lastBp?.takenAtFacilityUuid }
+  //
+  //      val expectedResultIndicesInCurrentFacility = setOf(0, 1, 2)
+  //      val expectedResultIndicesInOtherFacility = setOf(3, 4)
+  //
+  //      val actualPatientsInCurrentFacility = inCurrentFacility.map { it.fullName }.toSet()
+  //      val actualPatientsInOtherFacility = inOtherFacility.map { it.fullName }.toSet()
+  //      val actualResultIndicesInCurrentFacility = actualPatientsInCurrentFacility.map { patientName ->
+  //        searchResults.indexOfFirst { it.fullName == patientName }
+  //      }.toSet()
+  //      val actualResultIndicesOfOtherFacility = actualPatientsInOtherFacility.map { patientName ->
+  //        searchResults.indexOfFirst { it.fullName == patientName }
+  //      }.toSet()
+  //
+  //      assertThat(actualResultIndicesInCurrentFacility).isEqualTo(expectedResultIndicesInCurrentFacility)
+  //      assertThat(actualResultIndicesOfOtherFacility).isEqualTo(expectedResultIndicesInOtherFacility)
+  //    }
+  //
+  //    val resultsWithAgeFilter = patientRepository.search("ash").blockingFirst()
+  //    runAssertions(resultsWithAgeFilter)
+  //  }
 
   @Test
   fun patients_whose_last_visited_facility_matches_with_the_current_facility_should_be_present_at_the_top_when_searching() {
@@ -439,15 +438,10 @@ class PatientRepositoryAndroidTest {
                 // Record BPs in different facilities.
                 Observable.fromIterable(visitedFacilities)
                     .flatMapCompletable { (facility, isBpDeleted) ->
-//                      facilityRepository
-//                          .setCurrentFacility(user, facility)
-//                          .andThen(bpRepository
-//                              .saveMeasurement(savedPatient.uuid, systolic = 120, diastolic = 121)
-//                          )
-
                       val bloodPressureMeasurement = testData.bloodPressureMeasurement(
                           patientUuid = savedPatient.uuid,
-                          facilityUuid = facility.uuid)
+                          facilityUuid = facility.uuid,
+                          deletedAt = if (isBpDeleted) Instant.now() else null)
 
                       bloodPressureRepository.save(listOf(bloodPressureMeasurement))
                     }
